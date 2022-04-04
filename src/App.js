@@ -56,7 +56,7 @@ class App extends Component {
           )
           var newContents = Array.from(this.state.contents);
           newContents.push({id:this.max_content_id, title:_title, desc:_desc});
-          this.setState({contents:newContents});
+          this.setState({contents:newContents, mode: 'read', selected_content_id: this.max_content_id});
           console.log(_title, _desc);
         }.bind(this)}></CreateContent>
     } else if (this.state.mode === 'update'){
@@ -72,7 +72,7 @@ class App extends Component {
             }
             i = i+1;
           }
-          this.setState({contents:newContents});
+          this.setState({contents:newContents, mode: 'read'});
           console.log(_title, _desc);
       }.bind(this)}></UpdateContent>
     }
@@ -100,9 +100,29 @@ class App extends Component {
         }.bind(this)} 
         data={this.state.contents}></TOC>
         <Control onChangeMode={function(_mode){
-            this.setState({
-              mode: _mode 
-            });
+            if (_mode === 'delete'){
+              if (window.confirm('really?')){
+                var _contents = Array.from(this.state.contents);
+                var i = 0;
+                while (i < this.state.contents.length){
+                  if (_contents[i].id === this.state.selected_content_id){
+                    // splice : i부터 1까지 지우겠다.
+                    _contents.splice(i, 1);
+                    break;
+                  }
+                  i = i + 1;
+                }
+                this.setState({
+                  mode: 'welcome',
+                  contents: _contents
+                });
+                alert('deleted!');
+              }
+            } else {
+              this.setState({
+                mode: _mode 
+              });
+            }
         }.bind(this)}></Control>
         {this.getContent()}
       </div>
